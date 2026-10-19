@@ -63,7 +63,7 @@ export default function DocsPage() {
   return (
     <div>
       <header className="sticky top-0 z-20 border-b border-zinc-200 bg-white/80 backdrop-blur dark:border-zinc-800 dark:bg-zinc-950/80">
-        <div className="mx-auto flex max-w-3xl items-center justify-between px-4 py-3 md:px-6">
+        <div className="mx-auto flex max-w-5xl items-center justify-between px-4 py-3 md:px-6">
           <Link href="/" className="op-wordmark text-2xl">
             Once-Pay
           </Link>
