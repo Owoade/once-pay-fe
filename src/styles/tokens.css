@@ -1,0 +1,47 @@
+/* Once-Pay design tokens
+   Brand: Albert Sans · primary #2563EB · surface dark #0B1220
+
+   Fonts are loaded via next/font in src/app/layout.tsx (self-hosted),
+   which sets --font-albert-sans and --font-jetbrains-mono. */
+
+:root {
+  /* Brand Colors */
+  --op-color-primary: #2563eb;
+  --op-color-accent: #3b82f6;
+  --op-color-surface-dark: #0b1220;
+  --op-color-surface-light: #ffffff;
+
+  /* Text Colors */
+  --op-color-text-primary: #0b1220;
+  --op-color-text-inverse: #ffffff;
+
+  /* Typography */
+  --op-font-family-sans: var(--font-albert-sans), "Albert Sans", sans-serif;
+  --op-font-family-mono: var(--font-jetbrains-mono), "JetBrains Mono", monospace;
+  --op-font-weight-wordmark: 600;
+  --op-font-weight-bold: 700;
+  --op-letter-spacing-tight: -0.025em;
+}
+
+/* Typography Utility Classes */
+.op-wordmark {
+  font-family: var(--op-font-family-sans);
+  font-optical-sizing: auto;
+  font-weight: var(--op-font-weight-wordmark);
+  font-style: normal;
+  letter-spacing: var(--op-letter-spacing-tight);
+  color: var(--op-color-text-primary);
+}
+
+.op-heading-bold {
+  font-family: var(--op-font-family-sans);
+  font-optical-sizing: auto;
+  font-weight: var(--op-font-weight-bold);
+  font-style: normal;
+}
+
+/* Dark Theme Overrides */
+[data-theme="dark"] {
+  --op-color-text-primary: #ffffff;
+  --op-color-surface-light: #0b1220;
+}
