@@ -4,6 +4,7 @@ import Link from "next/link";
 import { usePathname, useRouter } from "next/navigation";
 import { useEffect, useState, type ReactNode } from "react";
 import { NAME_STORAGE_KEY, TOKEN_STORAGE_KEY } from "@/lib/api";
+import Logo from "@/components/logo";
 
 // Three tabs share the header; the token guard lives here so every tab is
 // protected without repeating it per page.
@@ -72,8 +73,8 @@ export default function DashboardShell({ children }: { children: ReactNode }) {
     <div>
       <header className="sticky top-0 z-20 border-b border-zinc-200 bg-white/80 backdrop-blur dark:border-zinc-800 dark:bg-zinc-950/80">
         <div className="mx-auto flex max-w-5xl flex-wrap items-center gap-x-6 gap-y-1 px-4 py-3 md:px-8">
-          <Link href="/dashboard" className="op-wordmark text-xl md:text-2xl">
-            Once-Pay
+          <Link href="/dashboard" className="inline-flex">
+            <Logo image_class="h-8 w-8" wordmark_class="text-xl md:text-2xl" />
           </Link>
 
           {/* Second row on small screens, inline on md+. */}

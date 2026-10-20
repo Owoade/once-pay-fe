@@ -1,7 +1,16 @@
 // Public API reference for the merchant-api surface — no auth required to read.
+import type { Metadata } from "next";
 import Link from "next/link";
 import CodeBlock from "@/components/code-block";
-import DocsToc from "./docs-toc";
+import Logo from "@/components/logo";
+import { BACKEND_URL } from "@/lib/api";
+import DocsToc, { DocsMobileNav } from "./docs-toc";
+
+export const metadata: Metadata = {
+  title: "API docs",
+  description:
+    "The Once-Pay merchant API reference — initiate, verify and reconcile transactions across Paystack, Flutterwave, Korapay, SeerBit and Monnify with a single API key.",
+};
 
 function MethodBadge({ method }: { method: "GET" | "POST" }) {
   return (
@@ -57,16 +66,20 @@ function ParamTable({ rows }: { rows: [string, string, string][] }) {
 }
 
 export default function DocsPage() {
-  const base = "https://oncepay-api.owoade.dev";
+  const base = BACKEND_URL;
   const key = "[API KEY]";
 
   return (
     <div>
-      <header className="sticky top-0 z-20 border-b border-zinc-200 bg-white/80 backdrop-blur dark:border-zinc-800 dark:bg-zinc-950/80">
+      {/* `relative` anchors the mobile hamburger's dropdown panel to the header. */}
+      <header className="sticky top-0 z-20 relative border-b border-zinc-200 bg-white/80 backdrop-blur dark:border-zinc-800 dark:bg-zinc-950/80">
         <div className="mx-auto flex max-w-5xl items-center justify-between px-4 py-3 md:px-6">
-          <Link href="/" className="op-wordmark text-2xl">
-            Once-Pay
-          </Link>
+          <div className="flex items-center gap-2">
+            <DocsMobileNav />
+            <Link href="/" className="inline-flex">
+              <Logo image_class="h-7 w-7" wordmark_class="text-2xl" />
+            </Link>
+          </div>
           <Link
             href="/login"
             className="text-sm font-medium text-brand-primary hover:underline"
@@ -80,7 +93,13 @@ export default function DocsPage() {
         <div className="min-w-0 max-w-3xl flex-1">
         <h1 className="op-heading-bold text-3xl">API Documentation</h1>
         <p className="mt-2 text-sm text-zinc-600 dark:text-zinc-400">
-          Accept payments through Once-Pay with one integration.
+          Accept payments through Once-Pay with one integration. Base URL:{" "}
+          <a
+            href={base}
+            className="text-brand-primary hover:underline"
+          >
+            {base}
+          </a>
         </p>
 
         <section id="authentication" className="mt-10 scroll-mt-24">
@@ -196,7 +215,7 @@ export default function DocsPage() {
           </div>
           <p className="mt-2 text-sm text-zinc-600 dark:text-zinc-400">
             Re-checks the transaction with its gateway and returns the current
-            state, including the customer's email.
+            state, including the customer&apos;s email.
           </p>
           <div className="mt-3 flex flex-col gap-3">
             <CodeBlock              label="request"
@@ -235,7 +254,7 @@ export default function DocsPage() {
         <section id="webhooks" className="mt-10 scroll-mt-24">
           <h2 className="op-heading-bold text-xl">5. Webhooks</h2>
           <p className="mt-2 text-sm text-zinc-600 dark:text-zinc-400">
-            Set your webhook URL in the dashboard's Developer tab. When a
+            Set your webhook URL in the dashboard&apos;s Developer tab. When a
             transaction succeeds, Once-Pay POSTs:
           </p>
           <div className="mt-3 flex flex-col gap-3">
@@ -333,6 +352,110 @@ const valid =
           </div>
         </section>
 
+        <section id="js-sdk" className="mt-10 scroll-mt-24">
+          <h2 className="op-heading-bold text-xl">7. JS Client SDK</h2>
+          <p className="mt-2 text-sm text-zinc-600 dark:text-zinc-400">
+            Prefer not to hand-roll HTTP calls? The Once-Pay JS SDK wraps
+            initiation and gives you a live settlement listener — no polling,
+            no webhooks to verify on the client.
+          </p>
+          <div className="mt-3">
+            <CodeBlock
+              label="install"
+              language="shell"
+              code={`npm install once-pay-sdk socket.io-client   # socket.io-client powers the live listener`}
+            />
+          </div>
+          <div className="mt-3 flex flex-col gap-3">
+            <CodeBlock
+              label="checkout.js"
+              language="nodejs"
+              code={`import OncePay, { OncePayError } from "once-pay-sdk";
+
+const client = new OncePay({
+  base_url: "${base}",
+  api_key: "${key}",
+});
+
+const response = await client.initiate_transaction({
+  amount: 15000,
+  email: "customer@example.com",
+  payment_gateway: "paystack",                    // one of the five gateways
+  callback_url: "https://your-server.com/complete", // optional
+  metadata: { order_id: "ORD-77" },                 // optional
+  on_success: ({ reference }) => {
+    // fires at most once, when this transaction settles —
+    // no polling, no reload. Subscribe later to any reference
+    // with: client.watch_transaction(reference, callback)
+  },
+});
+
+// open the hosted payment page (new tab)
+window.open(response.data.payment_link);
+// response.data.transaction_reference is also returned`}
+            />
+            <CodeBlock
+              label="errors"
+              language="nodejs"
+              code={`// Everything failing throws OncePayError — check code before message.
+try {
+  await client.initiate_transaction(payload);
+} catch (error) {
+  if (error instanceof OncePayError) {
+    error.code;     // e.g. 401 (bad key), 400 (bad payload), 408 (window expired)
+    error.message;  // e.g. "Transaction not found"
+  }
+}`}
+            />
+          </div>
+          <p className="mt-3 text-sm text-zinc-600 dark:text-zinc-400">
+            Plain script tag (no bundler)? Load{" "}
+            <code className="text-xs">vanila-js/index.js</code> instead — it
+            pulls its Socket.IO client from a CDN automatically. Bundled apps
+            must install <code className="text-xs">socket.io-client</code>{" "}
+            themselves; the dynamic import is resolved at build time.
+          </p>
+          <div className="mt-3 flex flex-col gap-3">
+            <CodeBlock
+              label="index.html"
+              language="nodejs"
+              code={`<script src="https://oncepay-storage.owoade.dev/lib/index.min.js"></script>
+<script>
+  const client = new OncePay({
+    base_url: "${base}",
+    api_key: "${key}",
+  });
+
+  document.getElementById("pay-button").addEventListener("click", () => {
+    client
+      .initiate_transaction({
+        amount: 15000,
+        email: "customer@example.com",
+        payment_gateway: "paystack",
+        on_success: ({ reference }) => {
+          // fires exactly once when the transaction settles
+          window.location.href = "/order-complete?ref=" + reference;
+        },
+      })
+      .then((response) => {
+        // open the hosted payment page (new tab)
+        window.open(response.data.payment_link);
+      })
+      .catch((error) => {
+        console.error(error.code, error.message);
+      });
+  });
+</script>`}
+            />
+            <p className="mt-3 text-sm text-zinc-600 dark:text-zinc-400">
+              The SDK is served as a plain script from our CDN —{" "}
+              <code className="text-xs">OncePay</code> and{" "}
+              <code className="text-xs">OncePayError</code> become globals, no
+              npm step, no bundler.
+            </p>
+          </div>
+        </section>
+
         <section id="errors" className="mt-10 scroll-mt-24">
           <h2 className="op-heading-bold text-xl">Errors</h2>
           <div className="mt-3">
@@ -349,11 +472,11 @@ const valid =
 
         <footer className="mt-14 border-t border-zinc-200 pt-6 dark:border-zinc-800">
           <p className="text-sm text-zinc-500 dark:text-zinc-400">
-            Questions? Sign in and use your Developer tab, or{" "}
+            Need an API key?{" "}
             <Link href="/login" className="font-medium text-brand-primary hover:underline">
-              sign in
+              Sign in
             </Link>{" "}
-            for live keys.
+            and open your Developer tab.
           </p>
         </footer>
         </div>

@@ -5,6 +5,7 @@ import { useRouter } from "next/navigation";
 import { useEffect, useState } from "react";
 import { toast } from "sonner";
 import ResendCodeButton from "@/components/resend-code-button";
+import Logo from "@/components/logo";
 import {
   FORGOT_PASSWORD_PENDING_KEY,
   type BackendResponse,
@@ -137,7 +138,12 @@ export default function ForgotPasswordPage() {
   return (
     <div className="flex flex-1 flex-col items-center justify-center px-4 font-sans">
       <main className="w-full max-w-sm rounded-2xl border border-zinc-200 bg-white p-8 shadow-sm dark:border-zinc-800 dark:bg-zinc-950">
-        <h1 className="op-wordmark text-3xl">Once-Pay</h1>
+        {/* The lockup routes back to the landing page. */}
+        <h1>
+          <Link href="/" className="inline-flex">
+            <Logo image_class="h-9 w-9" wordmark_class="text-3xl" />
+          </Link>
+        </h1>
 
         {phase === "email" ? (
           <>

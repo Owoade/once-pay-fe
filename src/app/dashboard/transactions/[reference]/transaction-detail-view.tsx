@@ -5,7 +5,9 @@ import { useParams, useRouter } from "next/navigation";
 import { useEffect, useState } from "react";
 import { toast } from "sonner";
 import StatusPill from "@/components/status-pill";
+import GatewayLogo, { gateway_display_name } from "@/components/gateway-logo";
 import { TOKEN_STORAGE_KEY, type BackendResponse } from "@/lib/api";
+import moment from "moment";
 
 type TransactionDetail = {
   reference: string;
@@ -167,8 +169,9 @@ export default function TransactionDetailPage() {
           </div>
           <div>
             <dt className="text-xs text-zinc-500 dark:text-zinc-400">Gateway</dt>
-            <dd className="mt-0.5 text-sm capitalize text-zinc-800 dark:text-zinc-200">
-              {transaction.payment_gateway}
+            <dd className="mt-0.5 flex items-center gap-2 text-sm text-zinc-800 dark:text-zinc-200">
+              <GatewayLogo gateway={transaction.payment_gateway} />
+              {gateway_display_name(transaction.payment_gateway)}
             </dd>
           </div>
           <div>
@@ -180,7 +183,7 @@ export default function TransactionDetailPage() {
           <div>
             <dt className="text-xs text-zinc-500 dark:text-zinc-400">Created</dt>
             <dd className="mt-0.5 text-sm text-zinc-800 dark:text-zinc-200">
-              {stamp(transaction.createdAt, transaction.initiated_at_ms)}
+              {moment(transaction.initiated_at_ms).format("D MMM, HH:mm")}
             </dd>
           </div>
           <div>

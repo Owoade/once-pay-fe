@@ -1,7 +1,8 @@
 import type { NextRequest } from "next/server";
 
+import { BACKEND_URL } from "@/lib/api";
+
 // Forwards dashboard requests to the backend, carrying the merchant's JWT.
-const BACKEND_URL = process.env.BACKEND_URL ?? "http://localhost:3000";
 
 async function proxy(
   request: NextRequest,

@@ -4,7 +4,9 @@ import { useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
 import { toast } from "sonner";
 import StatusPill from "@/components/status-pill";
+import GatewayLogo, { gateway_display_name } from "@/components/gateway-logo";
 import { TOKEN_STORAGE_KEY, type BackendResponse } from "@/lib/api";
+import moment from "moment";
 
 type MerchantTransaction = {
   reference: string;
@@ -12,7 +14,7 @@ type MerchantTransaction = {
   status: string;
   payment_gateway: string;
   customer_email: string | null;
-  initiated_at_ms: number;
+  initiated_at_ms: number | string;
   createdAt?: string;
 };
 
@@ -25,17 +27,23 @@ const naira = new Intl.NumberFormat("en-NG", {
 });
 
 function date_of(entry: MerchantTransaction): string {
-  const source =
-    entry.createdAt ??
-    (entry.initiated_at_ms ? new Date(entry.initiated_at_ms).toISOString() : null);
-  if (!source) return "—";
+  // `initiated_at_ms` can arrive as either a number or a numeric string
+  // (Sequelize's BIGINT sanitizer emits strings for large integers), so
+  // coerce once and check it resolved to a real timestamp — otherwise the
+  // Intl format call throws "date value is not finite".
+  const ms = entry.createdAt
+    ? new Date(entry.createdAt).getTime()
+    : Number(entry.initiated_at_ms);
+
+  if (!Number.isFinite(ms)) return "—";
+
   return new Intl.DateTimeFormat("en", {
     day: "numeric",
     month: "short",
     hour: "2-digit",
     minute: "2-digit",
     timeZone: "UTC",
-  }).format(new Date(source));
+  }).format(ms);
 }
 
 const filters = [
@@ -154,11 +162,12 @@ export default function TransactionsPage() {
 
       <section className="mt-4 overflow-hidden rounded-2xl border border-zinc-200 bg-white shadow-sm dark:border-zinc-800 dark:bg-zinc-950">
         <div className="overflow-x-auto" aria-busy={refetching}>
-          <table className="w-full min-w-[30rem] text-sm">
+          <table className="w-full min-w-[36rem] text-sm">
             <thead>
               <tr className="border-b border-zinc-200 text-left text-xs text-zinc-500 dark:border-zinc-800 dark:text-zinc-400">
                 <th className="px-4 py-3 font-medium">Date</th>
                 <th className="px-4 py-3 font-medium">Reference</th>
+                <th className="px-4 py-3 font-medium">Gateway</th>
                 <th className="px-4 py-3 text-right font-medium">Amount</th>
                 <th className="px-4 py-3 font-medium">Status</th>
               </tr>
@@ -172,10 +181,16 @@ export default function TransactionsPage() {
                       onClick={() => router.push(`/dashboard/transactions/${encodeURIComponent(entry.reference)}`)}
                     >
                       <td className="whitespace-nowrap px-4 py-3 text-zinc-500 dark:text-zinc-400">
-                        {date_of(entry)}
+                        {moment(entry.initiated_at_ms).format("D MMM, HH:mm")}
                       </td>
                       <td className="max-w-40 truncate px-4 py-3 font-mono text-xs text-zinc-700 group-hover:text-brand-primary dark:text-zinc-300">
                         {entry.reference}
+                      </td>
+                      <td className="whitespace-nowrap px-4 py-3">
+                        <span className="inline-flex items-center gap-2 text-zinc-800 dark:text-zinc-200">
+                          <GatewayLogo gateway={entry.payment_gateway} />
+                          {gateway_display_name(entry.payment_gateway)}
+                        </span>
                       </td>
                       <td className="whitespace-nowrap px-4 py-3 text-right tabular-nums text-zinc-800 dark:text-zinc-200">
                         {naira.format(entry.amount)}
@@ -187,7 +202,7 @@ export default function TransactionsPage() {
                   ))
                 : Array.from({ length: 5 }).map((_, index) => (
                     <tr key={index} aria-hidden="true">
-                      <td colSpan={4} className="px-4 py-4">
+                      <td colSpan={5} className="px-4 py-4">
                         <span className="block h-4 animate-pulse rounded bg-zinc-100 dark:bg-zinc-900" />
                       </td>
                     </tr>

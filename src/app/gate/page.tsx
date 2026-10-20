@@ -16,7 +16,18 @@ export default function GatePage() {
   const [error, setError] = useState(false);
 
   useEffect(() => {
-    const session = new URLSearchParams(window.location.search).get("session");
+    const params = new URLSearchParams(window.location.search);
+
+    // The backend's Google callback redirects here on failure with
+    // ?error=<message>; surface that instead of a generic "missing token".
+    const handoff_error = params.get("error");
+    if (handoff_error) {
+      setError(true);
+      toast.error(handoff_error);
+      return;
+    }
+
+    const session = params.get("session");
 
     if (!session) {
       setError(true);

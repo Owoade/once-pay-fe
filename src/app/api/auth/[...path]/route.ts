@@ -1,9 +1,10 @@
 import type { NextRequest } from "next/server";
 
+import { BACKEND_URL } from "@/lib/api";
+
 // Forwards browser requests to the backend without CORS friction.
 // GET  /api/auth/google   → BE GET  /auth/google
 // POST /api/auth/login    → BE POST /auth/login
-const BACKEND_URL = process.env.BACKEND_URL ?? "http://localhost:3000";
 
 async function proxy(
   request: NextRequest,

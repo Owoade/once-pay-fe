@@ -5,6 +5,7 @@ import { useRouter } from "next/navigation";
 import { useState } from "react";
 import { toast } from "sonner";
 import GoogleButton from "@/components/google-button";
+import Logo from "@/components/logo";
 import ResendCodeButton from "@/components/resend-code-button";
 import {
   NAME_STORAGE_KEY,
@@ -125,7 +126,12 @@ export default function SignupPage() {
   return (
     <div className="flex flex-1 flex-col items-center justify-center px-4 font-sans">
       <main className="w-full max-w-sm rounded-2xl border border-zinc-200 bg-white p-8 shadow-sm dark:border-zinc-800 dark:bg-zinc-950">
-        <h1 className="op-wordmark text-3xl">Once-Pay</h1>
+        {/* The lockup routes back to the landing page. */}
+        <h1>
+          <Link href="/" className="inline-flex">
+            <Logo image_class="h-9 w-9" wordmark_class="text-3xl" />
+          </Link>
+        </h1>
         <h2 className="op-heading-bold mt-6 text-xl">Create your account</h2>
         <p className="mt-1 text-sm text-zinc-600 dark:text-zinc-400">
           {phase === "details"
