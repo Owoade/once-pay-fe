@@ -139,7 +139,7 @@ export default function CodeBlock({
       toast.success("Copied to clipboard");
       setTimeout(() => setCopied(false), 2000);
     } catch {
-      toast.error("Could not copy — your browser blocked clipboard access");
+      toast.error("Could not copy because your browser blocked clipboard access");
     }
   }
 

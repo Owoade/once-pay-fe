@@ -1,4 +1,4 @@
-// Public API reference for the merchant-api surface — no auth required to read.
+// Public API reference for the merchant-api surface, with no auth required to read.
 import type { Metadata } from "next";
 import Link from "next/link";
 import CodeBlock from "@/components/code-block";
@@ -9,7 +9,7 @@ import DocsToc, { DocsMobileNav } from "./docs-toc";
 export const metadata: Metadata = {
   title: "API docs",
   description:
-    "The Once-Pay merchant API reference — initiate, verify and reconcile transactions across Paystack, Flutterwave, Korapay, SeerBit and Monnify with a single API key.",
+    "The Once-Pay merchant API reference, covering how to initiate, verify and reconcile transactions across Paystack, Flutterwave, Korapay, SeerBit and Monnify with a single API key.",
 };
 
 function MethodBadge({ method }: { method: "GET" | "POST" }) {
@@ -106,7 +106,7 @@ export default function DocsPage() {
           <h2 className="op-heading-bold text-xl">1. Authentication</h2>
           <p className="mt-2 text-sm text-zinc-600 dark:text-zinc-400">
             Send your API key (from your Developer tab) as a bearer token on
-            every request. Keys are scoped per merchant — you only ever see your
+            every request. Keys are scoped per merchant, so you only ever see your
             own data.
           </p>
           <div className="mt-3">
@@ -172,7 +172,7 @@ export default function DocsPage() {
             <Endpoint method="GET" path="/transactions" />
           </div>
           <p className="mt-2 text-sm text-zinc-600 dark:text-zinc-400">
-            Newest first. Only sanitized fields are returned — no gateway
+            Newest first. Only sanitized fields are returned, with no gateway
             internals.
           </p>
           <div className="mt-3">
@@ -303,7 +303,7 @@ const valid =
   crypto.timingSafeEqual(Buffer.from(expected), Buffer.from(signature));`}
             />
             <p className="mt-2 text-sm text-zinc-600 dark:text-zinc-400">
-              Failed deliveries are retried on our reconciliation schedule —
+              Failed deliveries are retried on our reconciliation schedule,
               roughly every 30 seconds up to 5 times, then every 5 minutes up to
               10, then hourly for the next 24 hours.
             </p>
@@ -313,7 +313,7 @@ const valid =
         <section id="response-format" className="mt-10 scroll-mt-24">
           <h2 className="op-heading-bold text-xl">6. Response format</h2>
           <p className="mt-2 text-sm text-zinc-600 dark:text-zinc-400">
-            Every endpoint answers with the same envelope — check{" "}
+            Every endpoint answers with the same envelope, so check{" "}
             <code className="text-xs">status</code> first, then read{" "}
             <code className="text-xs">data</code> or{" "}
             <code className="text-xs">message</code>.
@@ -322,7 +322,7 @@ const valid =
             <ParamTable
               rows={[
                 ["status", '"success" | "error"', '"error" means the request was rejected; "success" means data is populated.'],
-                ["message", "string", "Human-readable summary — the error reason when status is error."],
+                ["message", "string", "Human-readable summary, showing the error reason when status is error."],
                 ["data", "object | null", "The response payload; null whenever status is error."],
               ]}
             />
@@ -356,7 +356,7 @@ const valid =
           <h2 className="op-heading-bold text-xl">7. JS Client SDK</h2>
           <p className="mt-2 text-sm text-zinc-600 dark:text-zinc-400">
             Prefer not to hand-roll HTTP calls? The Once-Pay JS SDK wraps
-            initiation and gives you a live settlement listener — no polling,
+            initiation and gives you a live settlement listener, with no polling,
             no webhooks to verify on the client.
           </p>
           <div className="mt-3">
@@ -384,9 +384,8 @@ const response = await client.initiate_transaction({
   callback_url: "https://your-server.com/complete", // optional
   metadata: { order_id: "ORD-77" },                 // optional
   on_success: ({ reference }) => {
-    // fires at most once, when this transaction settles —
+    // fires at most once, when this transaction settles,
     // no polling, no reload. Subscribe later to any reference
-    // with: client.watch_transaction(reference, callback)
   },
 });
 
@@ -397,7 +396,7 @@ window.open(response.data.payment_link);
             <CodeBlock
               label="errors"
               language="nodejs"
-              code={`// Everything failing throws OncePayError — check code before message.
+              code={`// Everything failing throws OncePayError, so check code before message.
 try {
   await client.initiate_transaction(payload);
 } catch (error) {
@@ -410,7 +409,7 @@ try {
           </div>
           <p className="mt-3 text-sm text-zinc-600 dark:text-zinc-400">
             Plain script tag (no bundler)? Load{" "}
-            <code className="text-xs">vanila-js/index.js</code> instead — it
+            <code className="text-xs">vanila-js/index.js</code> instead, which
             pulls its Socket.IO client from a CDN automatically. Bundled apps
             must install <code className="text-xs">socket.io-client</code>{" "}
             themselves; the dynamic import is resolved at build time.
@@ -448,7 +447,7 @@ try {
 </script>`}
             />
             <p className="mt-3 text-sm text-zinc-600 dark:text-zinc-400">
-              The SDK is served as a plain script from our CDN —{" "}
+              The SDK is served as a plain script from our CDN, where{" "}
               <code className="text-xs">OncePay</code> and{" "}
               <code className="text-xs">OncePayError</code> become globals, no
               npm step, no bundler.
