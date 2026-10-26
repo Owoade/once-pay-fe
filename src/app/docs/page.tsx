@@ -133,7 +133,7 @@ export default function DocsPage() {
                 ["amount", "number", "Amount to charge, in Naira (NGN)."],
                 ["email", "string", "The customer's email address."],
                 ["payment_gateway", "string", "One of: paystack, flutterwave, korapay, monnify, seerbit."],
-                ["callback_url", "string · optional", "Where your customer is redirected after payment; receives a verification call within 60s."],
+                ["callback_url", "string · optional", "Where your customer is redirected after payment."],
                 ["metadata", "object · optional", "Your freeform data, echoed back on webhooks and transaction reads."],
               ]}
             />
@@ -401,7 +401,7 @@ try {
   await client.initiate_transaction(payload);
 } catch (error) {
   if (error instanceof OncePayError) {
-    error.code;     // e.g. 401 (bad key), 400 (bad payload), 408 (window expired)
+    error.code;     // e.g. 401 (bad key), 400 (bad payload)
     error.message;  // e.g. "Transaction not found"
   }
 }`}
@@ -463,7 +463,6 @@ try {
                 ["400", "HTTP", "Invalid payload (the message names the field)."],
                 ["401", "HTTP", "Missing or invalid API key."],
                 ["404", "HTTP", "Transaction or resource not found."],
-                ["408", "HTTP", "Callback/verification window expired (60s)."],
               ]}
             />
           </div>
